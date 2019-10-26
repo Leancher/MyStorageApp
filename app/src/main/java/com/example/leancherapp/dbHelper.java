@@ -12,18 +12,21 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-public class DatabaseHelper extends SQLiteOpenHelper {
+public class dbHelper extends SQLiteOpenHelper {
     private static String DB_PATH; // полный путь к базе данных
-    private static String DB_NAME = "cityinfo.db";
+    private static String DB_NAME = "shopDB.db";
     private static final int SCHEMA = 1; // версия базы данных
-    static final String TABLE = "users"; // название таблицы в бд
+    static final String TABLE = "goods"; // название таблицы в бд
     // названия столбцов
     static final String COLUMN_ID = "_id";
     static final String COLUMN_NAME = "name";
-    static final String COLUMN_YEAR = "year";
+    static final String COLUMN_TYPE = "type";
+    static final String COLUMN_DATE_PROD = "dateProd";
+    static final String COLUMN_DATE_RECEIPT = "dateReceipt";
+    static final String COLUMN_DATE_WRITE_OFF = "dateWriteOff";
     private Context myContext;
 
-    DatabaseHelper(Context context) {
+    dbHelper(Context context) {
         super(context, DB_NAME, null, SCHEMA);
         this.myContext=context;
         DB_PATH =context.getFilesDir().getPath() + "/" + DB_NAME;
@@ -64,7 +67,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             }
         }
         catch(IOException ex){
-            Log.d("DatabaseHelper", ex.getMessage());
+            Log.d("dbHelper", ex.getMessage());
         }
     }
     public SQLiteDatabase open()throws SQLException {

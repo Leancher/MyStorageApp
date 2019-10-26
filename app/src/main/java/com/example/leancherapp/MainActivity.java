@@ -3,57 +3,84 @@ package com.example.leancherapp;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.widget.ListView;
-import android.widget.SimpleCursorAdapter;
+import android.util.TypedValue;
+import android.widget.LinearLayout;
+
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.view.View;
-import android.widget.AdapterView;
+import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity{
-
-    ListView userList;
-    DatabaseHelper databaseHelper;
+    com.example.leancherapp.dbHelper dbHelper;
     SQLiteDatabase db;
-    Cursor userCursor;
-    SimpleCursorAdapter userAdapter;
+    Cursor itemCursor;
+    LinearLayout rootLayot;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        userList = (ListView)findViewById(R.id.list);
-        userList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView parent, View view, int position, long id) {
-                Intent intent = new Intent(getApplicationContext(), UserActivity.class);
-                intent.putExtra("id", id);
-                startActivity(intent);
-            }
-        });
-
-        databaseHelper = new DatabaseHelper(getApplicationContext());
+        rootLayot = (LinearLayout) findViewById(R.id.root_layout);
+        dbHelper = new dbHelper(getApplicationContext());
         // создаем базу данных
-        databaseHelper.create_db();
+        dbHelper.create_db();
     }
     @Override
     public void onResume() {
         super.onResume();
         // открываем подключение
-        db = databaseHelper.open();
-        //получаем данные из бд в виде курсора
-        userCursor =  db.rawQuery("select * from "+ DatabaseHelper.TABLE, null);
-        // определяем, какие столбцы из курсора будут выводиться в ListView
-        String[] headers = new String[] {DatabaseHelper.COLUMN_NAME, DatabaseHelper.COLUMN_YEAR};
-        // создаем адаптер, передаем в него курсор
-        userAdapter = new SimpleCursorAdapter(this, android.R.layout.two_line_list_item,
-                userCursor, headers, new int[]{android.R.id.text1, android.R.id.text2}, 0);
-        userList.setAdapter(userAdapter);
+        db = dbHelper.open();
+        itemCursor = db.rawQuery("select * from "+  dbHelper.TABLE, null);
+        itemCursor.moveToFirst();
+        while (!itemCursor.isAfterLast()){
+            showData();
+            itemCursor.moveToNext();
+        }
     }
-    // по нажатию на кнопку запускаем UserActivity для добавления данных
+    // по нажатию на кнопку запускаем GoodsActivity для добавления данных
     public void add(View view){
-        Intent intent = new Intent(this, UserActivity.class);
+        Intent intent = new Intent(this, GoodsActivity.class);
+        startActivity(intent);
+    }
+
+    public void showData(){
+        Integer id = itemCursor.getInt(itemCursor.getColumnIndex(dbHelper.COLUMN_ID));
+        String type = itemCursor.getString(itemCursor.getColumnIndex(dbHelper.COLUMN_TYPE));
+        String name = itemCursor.getString(itemCursor.getColumnIndex(dbHelper.COLUMN_NAME));
+        String header = type + " " + name;
+        showHeader(header, id);
+        String dateProd = itemCursor.getString(itemCursor.getColumnIndex(dbHelper.COLUMN_DATE_PROD));
+        String dateReceipt = itemCursor.getString(itemCursor.getColumnIndex(dbHelper.COLUMN_DATE_RECEIPT));
+        String dateWriteOff = itemCursor.getString(itemCursor.getColumnIndex(dbHelper.COLUMN_DATE_WRITE_OFF));
+        showProp("Произведен: " + dateProd, id);
+        showProp("Поступил: " + dateReceipt, id);
+        showProp("Списан: " + dateWriteOff, id);
+    }
+
+    public void showProp(String prop, Integer id){
+        TextView textView = new TextView(this);
+        textView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 50));
+        textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, 40);
+        textView.setText(prop);
+        textView.setId(id);
+        rootLayot.addView(textView);
+    }
+
+    public void showHeader(String header,  Integer id){
+        TextView textView = new TextView(this);
+        textView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 100));
+        textView.setTextSize(TypedValue.COMPLEX_UNIT_PX,80);
+        //textView.setTypeface(null, Typeface.BOLD);
+        textView.setText(header);
+        textView.setId(id);
+        //textView.setOnClickListener(onTextViewClick(this.get));
+        rootLayot.addView(textView);
+    }
+
+    public void onTextViewClick(Integer id) {
+        Intent intent = new Intent(getApplicationContext(), GoodsActivity.class);
+        intent.putExtra("id", id);
         startActivity(intent);
     }
 
@@ -62,6 +89,6 @@ public class MainActivity extends AppCompatActivity{
         super.onDestroy();
         // Закрываем подключение и курсор
         db.close();
-        userCursor.close();
+        itemCursor.close();
     }
 }

@@ -8,12 +8,28 @@
         android:id="@+id/name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Введите имя"/>
+        android:hint="Введите название товара" />
     <EditText
-        android:id="@+id/year"
+        android:id="@+id/type"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Введите год рождения"/>
+        android:hint="Введите тип товара"/>
+    <EditText
+        android:id="@+id/dateProd"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Введите дату выпуска"/>
+    <EditText
+        android:id="@+id/dateReceipt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Введите дату поступления"/>
+    <EditText
+        android:id="@+id/dateWriteOff"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Введите дату списания"/>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -25,7 +41,7 @@
             android:layout_weight="1"
             android:layout_height="wrap_content"
             android:text="Сохранить"
-            android:onClick="save"/>
+            android:onClick="saveItem"/>
         <Button
             android:id="@+id/deleteButton"
             android:layout_width="0dp"
@@ -34,4 +50,11 @@
             android:text="Удалить"
             android:onClick="delete"/>
     </LinearLayout>
+
+    <Button
+        android:id="@+id/cancelButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="goMain"
+        android:text="Отмена" />
 </LinearLayout>
