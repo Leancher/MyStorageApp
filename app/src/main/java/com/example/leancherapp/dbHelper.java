@@ -19,6 +19,7 @@ public class dbHelper extends SQLiteOpenHelper {
     static final String TABLE = "goods"; // название таблицы в бд
     // названия столбцов
     static final String COLUMN_ID = "_id";
+    static final String COLUMN_INV_NUM = "invNum";
     static final String COLUMN_NAME = "name";
     static final String COLUMN_TYPE = "type";
     static final String COLUMN_DATE_PROD = "dateProd";

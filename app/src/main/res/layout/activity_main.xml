@@ -11,4 +11,14 @@
         android:text="Добавить"
         android:onClick="add"
         android:textSize="18dp"/>
+    <EditText android:id="@+id/itemFilter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Поиск" />
+    <LinearLayout
+        android:id="@+id/goodsLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"></LinearLayout>
+
 </LinearLayout>

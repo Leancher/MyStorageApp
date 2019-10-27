@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class GoodsActivity extends AppCompatActivity {
 
+    EditText invNum;
     EditText nameBox;
     EditText typeBox;
     EditText dateProdBox;
@@ -30,6 +31,7 @@ public class GoodsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_goods);
 
+        invNum = (EditText) findViewById(R.id.invNum);
         nameBox = (EditText) findViewById(R.id.name);
         typeBox = (EditText) findViewById(R.id.type);
         dateProdBox = (EditText) findViewById(R.id.dateProd);
@@ -44,7 +46,7 @@ public class GoodsActivity extends AppCompatActivity {
 
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
-            itemId = extras.getLong("id");
+            itemId = extras.getInt("id");
         }
         // если 0, то добавление
         if (itemId > 0) {
@@ -52,11 +54,12 @@ public class GoodsActivity extends AppCompatActivity {
             itemCursor = db.rawQuery("select * from " + dbHelper.TABLE + " where " +
                     dbHelper.COLUMN_ID + "=?", new String[]{String.valueOf(itemId)});
             itemCursor.moveToFirst();
-            nameBox.setText(itemCursor.getString(1));
-            typeBox.setText(itemCursor.getString(2));
-            dateProdBox.setText(itemCursor.getString(3));
-            dateReceiptBox.setText(itemCursor.getString(4));
-            dateWriteOffBox.setText(itemCursor.getString(5));
+            invNum.setText(itemCursor.getString(1));
+            nameBox.setText(itemCursor.getString(2));
+            typeBox.setText(itemCursor.getString(3));
+            dateProdBox.setText(itemCursor.getString(4));
+            dateReceiptBox.setText(itemCursor.getString(5));
+            dateWriteOffBox.setText(itemCursor.getString(6));
             itemCursor.close();
         } else {
             // скрываем кнопку удаления
@@ -65,6 +68,7 @@ public class GoodsActivity extends AppCompatActivity {
     }
     public void saveItem(View view){
         ContentValues cv = new ContentValues();
+        cv.put(dbHelper.COLUMN_INV_NUM, invNum.getText().toString());
         cv.put(dbHelper.COLUMN_NAME, nameBox.getText().toString());
         cv.put(dbHelper.COLUMN_TYPE, typeBox.getText().toString());
         cv.put(dbHelper.COLUMN_DATE_PROD, dateProdBox.getText().toString());
@@ -84,7 +88,7 @@ public class GoodsActivity extends AppCompatActivity {
         goMain();
     }
 
-    private void goMain(){
+    public void goMain(){
         // закрываем подключение
         db.close();
         // переход к главной activity

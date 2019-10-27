@@ -5,6 +5,11 @@
     android:layout_height="match_parent"
     android:padding="16dp">
     <EditText
+        android:id="@+id/invNum"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Введите инвентарный номер" />
+    <EditText
         android:id="@+id/name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -51,10 +56,4 @@
             android:onClick="delete"/>
     </LinearLayout>
 
-    <Button
-        android:id="@+id/cancelButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="goMain"
-        android:text="Отмена" />
 </LinearLayout>
