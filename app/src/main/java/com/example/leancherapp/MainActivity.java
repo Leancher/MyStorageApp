@@ -7,7 +7,6 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.TypedValue;
 import android.widget.EditText;
-import android.widget.FilterQueryProvider;
 import android.widget.LinearLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
@@ -39,21 +38,31 @@ public class MainActivity extends AppCompatActivity implements OnClickListener{
         goodsLayout.removeAllViews();
         // открываем подключение
         db = dbHelper.open();
-        itemCursor = db.rawQuery("select * from "+  dbHelper.TABLE, null);
-        //String[] goodsList = getGoodsList();
+        showAllItem();
+        itemFilter.addTextChangedListener(new TextWatcher(){
+            public void afterTextChanged(Editable s) { }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+            // при изменении текста выполняем фильтрацию
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                goodsLayout.removeAllViews();
+                itemCursor = db.rawQuery("select * from " + dbHelper.TABLE + " where " +
+                            dbHelper.COLUMN_NAME + " like \"%" + s + "%\"", null);
+                itemCursor.moveToFirst();
+                while (!itemCursor.isAfterLast()){
+                    showData();
+                    itemCursor.moveToNext();
+                }
+            }
+        });
+    }
+
+    private void showAllItem(){
+        itemCursor = db.rawQuery("select * from " + dbHelper.TABLE,null);
         itemCursor.moveToFirst();
         while (!itemCursor.isAfterLast()){
             showData();
             itemCursor.moveToNext();
         }
-
-    }
-
-    private String[] getGoodsList(){
-        int itemsCount = itemCursor.getCount();
-        int colCount = itemCursor.getColumnCount();
-        String[] goodsList = new String[itemsCount];
-        return goodsList;
     }
 
     // по нажатию на кнопку запускаем GoodsActivity для добавления данных
@@ -70,7 +79,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener{
         startActivity(intent);
     }
 
-    public void showData(){
+    private void showData(){
         Integer id = itemCursor.getInt(itemCursor.getColumnIndex(dbHelper.COLUMN_ID));
         String type = itemCursor.getString(itemCursor.getColumnIndex(dbHelper.COLUMN_TYPE));
         String name = itemCursor.getString(itemCursor.getColumnIndex(dbHelper.COLUMN_NAME));
@@ -85,7 +94,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener{
         showProp(prop, id);
     }
 
-    public void showProp(String prop, Integer id){
+    private void showProp(String prop, Integer id){
         TextView textView = new TextView(this);
         textView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
         textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, 40);
@@ -96,7 +105,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener{
         goodsLayout.addView(textView);
     }
 
-    public void showHeader(String header,  Integer id){
+    private void showHeader(String header,  Integer id){
         TextView textView = new TextView(this);
         textView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 100));
         textView.setTextSize(TypedValue.COMPLEX_UNIT_PX,80);
