@@ -7,10 +7,12 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.TypedValue;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.view.View;
+import android.widget.Space;
 import android.widget.TextView;
 import android.view.View.OnClickListener;
 
@@ -49,7 +51,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener{
                             dbHelper.COLUMN_NAME + " like \"%" + s + "%\"", null);
                 itemCursor.moveToFirst();
                 while (!itemCursor.isAfterLast()){
-                    showData();
+                    createGoodsCard();
                     itemCursor.moveToNext();
                 }
             }
@@ -60,7 +62,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener{
         itemCursor = db.rawQuery("select * from " + dbHelper.TABLE,null);
         itemCursor.moveToFirst();
         while (!itemCursor.isAfterLast()){
-            showData();
+            createGoodsCard();
             itemCursor.moveToNext();
         }
     }
@@ -79,42 +81,63 @@ public class MainActivity extends AppCompatActivity implements OnClickListener{
         startActivity(intent);
     }
 
-    private void showData(){
+    private void createGoodsCard(){
+        LinearLayout curGoodsLayout = new LinearLayout(this);
+        curGoodsLayout.setOrientation(LinearLayout.HORIZONTAL);
+
+        LinearLayout descLayout = new LinearLayout(this);
+        descLayout.setOrientation(LinearLayout.VERTICAL);
+        descLayout.addView(headerItem());
+        descLayout.addView(propItem());
+
+        ImageView imgGoods = new ImageView(this);
+        imgGoods.setLayoutParams(new LinearLayout.LayoutParams(225, 300));
+        imgGoods.setImageResource(R.drawable.tempimg);
         Integer id = itemCursor.getInt(itemCursor.getColumnIndex(dbHelper.COLUMN_ID));
-        String type = itemCursor.getString(itemCursor.getColumnIndex(dbHelper.COLUMN_TYPE));
-        String name = itemCursor.getString(itemCursor.getColumnIndex(dbHelper.COLUMN_NAME));
-        String header = type + " " + name;
-        showHeader(header, id);
+        imgGoods.setId(id);
+        imgGoods.setClickable(true);
+        imgGoods.setOnClickListener(this);
+
+        Space space = new Space(this);
+        space.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 5));
+
+        curGoodsLayout.addView(descLayout);
+        curGoodsLayout.addView(imgGoods);
+        goodsLayout.addView(space);
+        goodsLayout.addView(curGoodsLayout);
+    }
+
+    private TextView propItem(){
+        Integer id = itemCursor.getInt(itemCursor.getColumnIndex(dbHelper.COLUMN_ID));
         String invNum = itemCursor.getString(itemCursor.getColumnIndex(dbHelper.COLUMN_INV_NUM));
         String dateProd = itemCursor.getString(itemCursor.getColumnIndex(dbHelper.COLUMN_DATE_PROD));
         String dateReceipt = itemCursor.getString(itemCursor.getColumnIndex(dbHelper.COLUMN_DATE_RECEIPT));
         String dateWriteOff = itemCursor.getString(itemCursor.getColumnIndex(dbHelper.COLUMN_DATE_WRITE_OFF));
         String prop = "Инвент. номер: " + invNum + "\n" + "Произведен: " + dateProd + "\n" +
                 "Поступил: " + dateReceipt + "\n" + "Списан: " + dateWriteOff;
-        showProp(prop, id);
-    }
-
-    private void showProp(String prop, Integer id){
         TextView textView = new TextView(this);
-        textView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+        textView.setLayoutParams(new LinearLayout.LayoutParams(850, LinearLayout.LayoutParams.WRAP_CONTENT));
         textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, 40);
         textView.setId(id);
         textView.setClickable(true);
         textView.setOnClickListener(this);
         textView.setText(prop);
-        goodsLayout.addView(textView);
+        return textView;
     }
 
-    private void showHeader(String header,  Integer id){
+    private TextView headerItem(){
+        Integer id = itemCursor.getInt(itemCursor.getColumnIndex(dbHelper.COLUMN_ID));
+        String type = itemCursor.getString(itemCursor.getColumnIndex(dbHelper.COLUMN_TYPE));
+        String name = itemCursor.getString(itemCursor.getColumnIndex(dbHelper.COLUMN_NAME));
+        String header = type + " " + name;
         TextView textView = new TextView(this);
-        textView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 100));
-        textView.setTextSize(TypedValue.COMPLEX_UNIT_PX,80);
-        //textView.setTypeface(null, Typeface.BOLD);
+        textView.setLayoutParams(new LinearLayout.LayoutParams(850, 100));
+        textView.setTextSize(TypedValue.COMPLEX_UNIT_PX,70);
         textView.setText(header);
         textView.setId(id);
         textView.setClickable(true);
         textView.setOnClickListener(this);
-        goodsLayout.addView(textView);
+        return textView;
     }
 
     @Override
