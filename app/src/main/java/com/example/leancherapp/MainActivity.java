@@ -1,17 +1,25 @@
 package com.example.leancherapp;
 
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.view.View;
 import android.widget.Space;
 import android.view.View.OnClickListener;
+
+
+interface OnClickInterface{
+    void onClickImage(View v);
+}
 
 public class MainActivity extends AppCompatActivity implements OnClickListener{
     dbHelper dbHelper;
@@ -20,6 +28,10 @@ public class MainActivity extends AppCompatActivity implements OnClickListener{
     LinearLayout goodsLayout;
     EditText itemFilter;
     goodsCard goodsCard;
+    static final int REQUEST_TAKE_PHOTO = 1;
+    static cameraHelper cameraHelper;
+    static Integer imageID;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,9 +39,10 @@ public class MainActivity extends AppCompatActivity implements OnClickListener{
         setContentView(R.layout.activity_main);
         goodsLayout = (LinearLayout) findViewById(R.id.goodsLayout);
         itemFilter = (EditText) findViewById(R.id.itemFilter);
-        goodsCard = new goodsCard(this);
+        goodsCard = new goodsCard(this,this, MainActivity::onClickImage);
         dbHelper = new dbHelper(getApplicationContext());
         dbHelper.create_db();
+        cameraHelper = new cameraHelper(this, this);
     }
 
     @Override
@@ -64,12 +77,12 @@ public class MainActivity extends AppCompatActivity implements OnClickListener{
     private void getDataFromDB(){
         itemCursor.moveToFirst();
         while (!itemCursor.isAfterLast()){
-            addGoodsCard();
+            showGoodsCard();
             itemCursor.moveToNext();
         }
     }
 
-    private void addGoodsCard(){
+    private void showGoodsCard(){
         Space space = new Space(this);
         space.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 5));
         goodsLayout.addView(space);
@@ -78,7 +91,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener{
     }
 
     // по нажатию на кнопку запускаем GoodsActivity для добавления данных
-    public void add(View view){
+    public void addGoodsToDB(View view){
         Intent intent = new Intent(this, GoodsActivity.class);
         startActivity(intent);
     }
@@ -88,6 +101,23 @@ public class MainActivity extends AppCompatActivity implements OnClickListener{
         Intent intent = new Intent(getApplicationContext(), GoodsActivity.class);
         intent.putExtra("id", v.getId());
         startActivity(intent);
+    }
+
+    public static void onClickImage(View v){
+        imageID = v.getId();
+        cameraHelper.dispatchTakePictureIntent();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_TAKE_PHOTO && resultCode == RESULT_OK) {
+            Bitmap bitmap = cameraHelper.showPhoto();
+            //Resources res = getResources();
+            //Integer resID =  res.getInteger(imageID);
+            //ImageView imageView = (ImageView) findViewById(resID);
+            //imageView.setImageBitmap(bitmap);
+        }
     }
 
     @Override

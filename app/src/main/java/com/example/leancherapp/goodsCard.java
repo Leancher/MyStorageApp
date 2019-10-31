@@ -1,5 +1,7 @@
 package com.example.leancherapp;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.database.Cursor;
 import android.util.TypedValue;
 import android.view.View;
@@ -8,11 +10,18 @@ import android.widget.LinearLayout;
 import android.content.Context;
 import android.widget.TextView;
 
+
+
 public class goodsCard{
+    Activity activity;
     Context context;
     Cursor itemCursor;
-    public goodsCard(Context context){
+    OnClickInterface onClickInterface;
+
+    public goodsCard(Context context, Activity activity, OnClickInterface onClickInterface){
+        this.activity = activity;
         this.context = context;
+        this.onClickInterface = onClickInterface;
     }
     public LinearLayout createGoodsCard(Cursor cursor){
         itemCursor = cursor;
@@ -30,8 +39,14 @@ public class goodsCard{
         Integer id = itemCursor.getInt(itemCursor.getColumnIndex(dbHelper.COLUMN_ID));
         imgGoods.setId(id);
         imgGoods.setClickable(true);
-        imgGoods.setOnClickListener((View.OnClickListener) context);
 
+        imgGoods.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onClickInterface.onClickImage(v);
+            }
+        });
+        //imgGoods.setOnClickListener((View.OnClickListener) context);
         curGoodsLayout.addView(descLayout);
         curGoodsLayout.addView(imgGoods);
         return curGoodsLayout;
