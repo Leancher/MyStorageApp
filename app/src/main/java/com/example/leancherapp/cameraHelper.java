@@ -64,8 +64,7 @@ public class cameraHelper {
             try {
                 photoFile = createImageFile();
             } catch (IOException ex) {
-                // Error occurred while creating the File
-                //Toast.makeText(this, "Error!", Toast.LENGTH_SHORT).show();
+
             }
             // Continue only if the File was successfully created
             if (photoFile != null) {

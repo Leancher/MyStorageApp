@@ -113,10 +113,8 @@ public class MainActivity extends AppCompatActivity implements OnClickListener{
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_TAKE_PHOTO && resultCode == RESULT_OK) {
             Bitmap bitmap = cameraHelper.showPhoto();
-            //Resources res = getResources();
-            //Integer resID =  res.getInteger(imageID);
-            //ImageView imageView = (ImageView) findViewById(resID);
-            //imageView.setImageBitmap(bitmap);
+            ImageView imageView = goodsLayout.findViewWithTag(imageID);
+            imageView.setImageBitmap(bitmap);
         }
     }
 

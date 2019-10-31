@@ -38,6 +38,7 @@ public class goodsCard{
         imgGoods.setImageResource(R.drawable.tempimg);
         Integer id = itemCursor.getInt(itemCursor.getColumnIndex(dbHelper.COLUMN_ID));
         imgGoods.setId(id);
+        imgGoods.setTag(id);
         imgGoods.setClickable(true);
 
         imgGoods.setOnClickListener(new View.OnClickListener() {
@@ -46,7 +47,6 @@ public class goodsCard{
                 onClickInterface.onClickImage(v);
             }
         });
-        //imgGoods.setOnClickListener((View.OnClickListener) context);
         curGoodsLayout.addView(descLayout);
         curGoodsLayout.addView(imgGoods);
         return curGoodsLayout;
